@@ -1,0 +1,9 @@
+streamlit>=1.28.0
+transformers>=4.36.0
+torch>=2.0.0
+accelerate>=0.21.0
+bitsandbytes>=0.41.0
+sentencepiece>=0.1.99
+indic-transliteration>=2.3.43
+protobuf<=3.20.3  # Some tokenizer configs require older protobuf versions
+git+https://github.com/AI4Bharat/IndicTrans2.git@main#egg=IndicTransToolkit
