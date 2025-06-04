@@ -1,14 +1,9 @@
-import sys
-import os
-sys.path.append(os.path.abspath("./IndicTransToolkit"))
-
+# Then import from the inner package
 from IndicTransToolkit import processor
-
+from IndicTransToolkit.processor import IndicProcessor
 
 import streamlit as st
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer, BitsAndBytesConfig
-from IndicTransToolkit.processor import IndicProcessor
-
 from indic_transliteration.sanscript import transliterate, ITRANS, TELUGU
 import torch
 
