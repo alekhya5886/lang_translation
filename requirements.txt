@@ -1,8 +1,34 @@
-streamlit>=1.28.0
-transformers>=4.36.0
-torch>=2.0.0
-accelerate>=0.21.0
-bitsandbytes>=0.41.0
-sentencepiece>=0.1.99
-indic-transliteration>=2.3.43
-protobuf<=3.20.3  # Some tokenizer configs require older protobuf versions
+# Core Dependencies
+torch>=2.7.0
+transformers>=4.52.4
+bitsandbytes>=0.46.0
+
+# HuggingFace and Datasets
+datasets>=3.6.0
+huggingface-hub>=0.32.3
+
+# Indic NLP Toolkit
+IndicTransToolkit @ file:///C:/Users/Alekhya/OneDrive/Desktop/lang_translation/IndicTransToolkit
+indic-transliteration>=2.3.69
+indic-nlp-library-itt>=0.1.0
+
+# Streamlit UI
+streamlit>=1.45.1
+
+# Tokenization & Text Processing
+sentencepiece>=0.2.0
+sacremoses>=0.1.1
+regex>=2024.11.6
+
+# Utilities
+tqdm>=4.67.1
+filelock>=3.18.0
+numpy>=2.2.6
+scipy>=1.15.3
+requests>=2.32.3
+
+# Optional (for faster preprocessing/transliteration)
+Cython>=3.1.1
+
+# If using Sphinx or docs locally, uncomment:
+# sphinx>=8.1.3
