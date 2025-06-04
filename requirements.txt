@@ -1,7 +1,7 @@
+python-3.10
 streamlit
 torch
 transformers
 sentencepiece==0.1.99
-
 accelerate
 indic-transliteration
