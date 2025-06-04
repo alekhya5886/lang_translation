@@ -1,22 +1,6 @@
-torch>=2.0.0
-transformers>=4.30.0
-bitsandbytes>=0.35.0
-
-datasets
-huggingface-hub
-
-
-indic-transliteration
-indic-nlp-library-itt
-
 streamlit
-
-sentencepiece==0.1.99  # ✅ Avoids build error
-sacremoses
-regex
-
-tqdm
-filelock
-numpy
-scipy
-requests
+torch
+transformers
+sentencepiece
+accelerate
+indic-transliteration
