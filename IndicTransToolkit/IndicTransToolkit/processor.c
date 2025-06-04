@@ -5,7 +5,7 @@
     "distutils": {
         "name": "IndicTransToolkit.processor",
         "sources": [
-            "IndicTransToolkit/processor.pyx"
+            "IndicTransToolkit/IndicTransToolkit/processor.pyx"
         ]
     },
     "module_name": "IndicTransToolkit.processor"
@@ -1324,7 +1324,7 @@ static const char *__pyx_filename;
 /* #### Code section: filename_table ### */
 
 static const char* const __pyx_f[] = {
-  "IndicTransToolkit/processor.pyx",
+  "IndicTransToolkit/IndicTransToolkit/processor.pyx",
   "<stringsource>",
 };
 /* #### Code section: utility_code_proto_before_types ### */
@@ -2836,11 +2836,11 @@ static const char __pyx_k_A_S_1_t1G6_E_3LEQVVW_q_4_AS_d_q[] = "\200A\360\006\000
 static const char __pyx_k_A_Za_z0_9___A_Za_z0_9_A_Z_a_z_2[] = "[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}";
 static const char __pyx_k_Cython_version_of_the_IndicProc[] = "\nCython version of the IndicProcessor class with optimizations for performance.\nOnly preprocess_batch and postprocess_batch are exposed as cpdef methods.\nAll other methods are internal (cdef) for optimized Cython usage.\n";
 static const char __pyx_k_IndicProcessor_preprocess_batch[] = "IndicProcessor.preprocess_batch";
-static const char __pyx_k_IndicTransToolkit_processor_pyx[] = "IndicTransToolkit/processor.pyx";
 static const char __pyx_k_d_d_s_s_s_d_d_s_d_d_d_d_d_d_d_d[] = "(~?\\d+\\.?\\d*\\s?%?\\s?-?\\s?~?\\d+\\.?\\d*\\s?%|~?\\d+%|\\d+[-\\/.,:']\\d+[-\\/.,:'+]\\d+(?:\\.\\d+)?|\\d+[-\\/.:'+]\\d+(?:\\.\\d+)?)";
 static const char __pyx_k_A_D_d_Q_S_9Cq_r_1_t1G6_E_3K9TYYZ[] = "\200A\360\010\000\026\027\330\027\030\330\027\030\360\014\000\t\"\240\021\330\010\034\230D\240\016\250d\260!\260:\270Q\360\010\000\t\026\220S\230\001\230\021\340\010\013\2109\220C\220q\330\014\031\320\031/\250r\260\037\300\001\300\021\340\010\013\2101\330\014\027\220t\2301\230G\2406\250\023\250E\260\022\3203K\3109\320TY\320YZ\340\014\027\220q\340\010\017\210q\220\004\220L\240\001\240\023\240J\250j\270\014\300K\310t\320SX\320XY";
 static const char __pyx_k_IndicProcessor___setstate_cython[] = "IndicProcessor.__setstate_cython__";
 static const char __pyx_k_IndicProcessor_postprocess_batch[] = "IndicProcessor.postprocess_batch";
+static const char __pyx_k_IndicTransToolkit_IndicTransTool[] = "IndicTransToolkit/IndicTransToolkit/processor.pyx";
 static const char __pyx_k_Note_that_Cython_is_deliberately[] = "Note that Cython is deliberately stricter than PEP-484 and rejects subclasses of builtin types. If you need to pass subclasses then set the 'annotation_typing' directive to False.";
 static const char __pyx_k_indicnlp_normalize_indic_normali[] = "indicnlp.normalize.indic_normalize";
 static const char __pyx_k_indicnlp_transliterate_unicode_t[] = "indicnlp.transliterate.unicode_transliterate";
@@ -2971,8 +2971,8 @@ static __pyx_mstatetype * const __pyx_mstate_global = &__pyx_mstate_global_stati
 #define __pyx_n_u_IndicProcessor___setstate_cython __pyx_string_tab[31]
 #define __pyx_n_u_IndicProcessor_postprocess_batch __pyx_string_tab[32]
 #define __pyx_n_u_IndicProcessor_preprocess_batch __pyx_string_tab[33]
-#define __pyx_n_u_IndicTransToolkit_processor __pyx_string_tab[34]
-#define __pyx_kp_u_IndicTransToolkit_processor_pyx __pyx_string_tab[35]
+#define __pyx_kp_u_IndicTransToolkit_IndicTransTool __pyx_string_tab[34]
+#define __pyx_n_u_IndicTransToolkit_processor __pyx_string_tab[35]
 #define __pyx_n_u_Latn __pyx_string_tab[36]
 #define __pyx_n_u_List __pyx_string_tab[37]
 #define __pyx_n_u_MosesDetokenizer __pyx_string_tab[38]
@@ -9994,8 +9994,8 @@ static const __Pyx_StringTabEntry __pyx_string_tab[] = {
   {__pyx_k_IndicProcessor___setstate_cython, sizeof(__pyx_k_IndicProcessor___setstate_cython), 0, 1, 1}, /* PyObject cname: __pyx_n_u_IndicProcessor___setstate_cython */
   {__pyx_k_IndicProcessor_postprocess_batch, sizeof(__pyx_k_IndicProcessor_postprocess_batch), 0, 1, 1}, /* PyObject cname: __pyx_n_u_IndicProcessor_postprocess_batch */
   {__pyx_k_IndicProcessor_preprocess_batch, sizeof(__pyx_k_IndicProcessor_preprocess_batch), 0, 1, 1}, /* PyObject cname: __pyx_n_u_IndicProcessor_preprocess_batch */
+  {__pyx_k_IndicTransToolkit_IndicTransTool, sizeof(__pyx_k_IndicTransToolkit_IndicTransTool), 0, 1, 0}, /* PyObject cname: __pyx_kp_u_IndicTransToolkit_IndicTransTool */
   {__pyx_k_IndicTransToolkit_processor, sizeof(__pyx_k_IndicTransToolkit_processor), 0, 1, 1}, /* PyObject cname: __pyx_n_u_IndicTransToolkit_processor */
-  {__pyx_k_IndicTransToolkit_processor_pyx, sizeof(__pyx_k_IndicTransToolkit_processor_pyx), 0, 1, 0}, /* PyObject cname: __pyx_kp_u_IndicTransToolkit_processor_pyx */
   {__pyx_k_Latn, sizeof(__pyx_k_Latn), 0, 1, 1}, /* PyObject cname: __pyx_n_u_Latn */
   {__pyx_k_List, sizeof(__pyx_k_List), 0, 1, 1}, /* PyObject cname: __pyx_n_u_List */
   {__pyx_k_MosesDetokenizer, sizeof(__pyx_k_MosesDetokenizer), 0, 1, 1}, /* PyObject cname: __pyx_n_u_MosesDetokenizer */
@@ -10478,17 +10478,17 @@ static int __Pyx_CreateCodeObjects(__pyx_mstatetype *__pyx_mstate) {
   {
     const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 1, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 197, 14};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_m};
-    __pyx_mstate_global->__pyx_codeobj_tab[0] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_IndicTransToolkit_processor_pyx, __pyx_mstate->__pyx_n_u_lambda, __pyx_k_JavQb_a, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[0])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[0] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_IndicTransToolkit_IndicTransTool, __pyx_mstate->__pyx_n_u_lambda, __pyx_k_JavQb_a, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[0])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {6, 0, 0, 6, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 449, 136};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self, __pyx_mstate->__pyx_n_u_batch, __pyx_mstate->__pyx_n_u_src_lang, __pyx_mstate->__pyx_n_u_tgt_lang, __pyx_mstate->__pyx_n_u_is_target, __pyx_mstate->__pyx_n_u_visualize};
-    __pyx_mstate_global->__pyx_codeobj_tab[1] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_IndicTransToolkit_processor_pyx, __pyx_mstate->__pyx_n_u_preprocess_batch, __pyx_k_A_D_d_Q_S_9Cq_r_1_t1G6_E_3K9TYYZ, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[1])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[1] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_IndicTransToolkit_IndicTransTool, __pyx_mstate->__pyx_n_u_preprocess_batch, __pyx_k_A_D_d_Q_S_9Cq_r_1_t1G6_E_3K9TYYZ, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[1])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {4, 0, 0, 4, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 479, 97};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self, __pyx_mstate->__pyx_n_u_sents, __pyx_mstate->__pyx_n_u_lang, __pyx_mstate->__pyx_n_u_visualize};
-    __pyx_mstate_global->__pyx_codeobj_tab[2] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_IndicTransToolkit_processor_pyx, __pyx_mstate->__pyx_n_u_postprocess_batch, __pyx_k_A_S_1_t1G6_E_3LEQVVW_q_4_AS_d_q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[2])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[2] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_IndicTransToolkit_IndicTransTool, __pyx_mstate->__pyx_n_u_postprocess_batch, __pyx_k_A_S_1_t1G6_E_3LEQVVW_q_4_AS_d_q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[2])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 1, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 1, 9};
