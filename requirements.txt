@@ -5,3 +5,4 @@ transformers
 sentencepiece==0.1.99
 accelerate
 indic-transliteration
+sacrebleu
