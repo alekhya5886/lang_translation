@@ -5,8 +5,6 @@ bitsandbytes>=0.35.0
 datasets
 huggingface-hub
 
-# Replaces the local path with GitHub repo
-git+https://github.com/AI4Bharat/IndicTrans2.git#subdirectory=IndicTransToolkit
 
 indic-transliteration
 indic-nlp-library-itt
