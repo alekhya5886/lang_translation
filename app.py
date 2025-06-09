@@ -71,7 +71,7 @@ def batch_translate(input_sentences, src_lang, tgt_lang, model, tokenizer, ip):
 with st.spinner("Loading models..."):
     en_to_indic_tokenizer, en_to_indic_model = load_model_and_tokenizer("ai4bharat/indictrans2-en-indic-1B")
     indic_to_en_tokenizer, indic_to_en_model = load_model_and_tokenizer("ai4bharat/indictrans2-indic-en-1B")
-    ip = processor(inference=True)
+    ip = IndicProcessor(inference=True)
 
 # Streamlit UI
 st.title("Telugu ↔ English Translator 🇮🇳")
