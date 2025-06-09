@@ -1,6 +1,7 @@
-from setuptools import setup
-from Cython.Build import cythonize
+from setuptools import setup, Extension
 
 setup(
-    ext_modules=cythonize("IndicTransToolkit/IndicTransToolkit/processor.pyx"),
+    ext_modules=[
+        Extension("IndicTransToolkit.processor", ["IndicTransToolkit/processor.c"])
+    ]
 )
