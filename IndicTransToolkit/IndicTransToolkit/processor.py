@@ -9,7 +9,8 @@ from queue import Queue
 from typing import List
 
 # Importing Python objects since these libraries don't offer C-extensions
-from indicnlp.tokenize import indic_tokenize, indic_detokenize
+from indicnlp.tokenize import indic_tokenize # Keep this for preprocessing, if used
+# from indicnlp.tokenize import indic_detokenize # <--- Commented out
 from indicnlp.normalize.indic_normalize import IndicNormalizerFactory
 from sacremoses import MosesPunctNormalizer, MosesTokenizer, MosesDetokenizer
 
@@ -159,11 +160,29 @@ class IndicProcessor:
 
         # Detokenize
         if language == "en":
+            # For English, Moses detokenizer works fine
             sentence = self._en_detok.detokenize(sentence.split())
         else:
-            sentence = indic_detokenize.trivial_detokenize(sentence.split())
+            # For Indic languages, we're temporarily bypassing indic_detokenize.trivial_detokenize
+            # due to an apparent bug/incompatibility in the indicnlp library.
+            # The model's direct output (decoded) should be reasonably detokenized.
+            pass # Keep the sentence as is from the decoded output
 
-        # Remove multiple spaces
+        # Apply general post-processing for spaces and punctuation, which is still useful
         sentence = self._MULTISPACE_REGEX.sub(" ", sentence).strip()
+
+        # Apply other general punctuation normalization regexes that are in _preprocess but useful here too.
+        # Note: Some of these might already be handled by the model's decoding, but it's a fallback.
+        sentence = re.sub(r'\s*,\s*', ', ', sentence)
+        sentence = re.sub(r'\s*\.\s*(?!\d)', '. ', sentence) # Avoid touching numbers like 3.14
+        sentence = re.sub(r'\s*\?\s*', '? ', sentence)
+        sentence = re.sub(r'\s*!\s*', '! ', sentence)
+        sentence = re.sub(r'\s*:\s*', ': ', sentence)
+        sentence = re.sub(r'\s*;\s*', '; ', sentence)
+        sentence = re.sub(r'\s*\(\s*', ' (', sentence)
+        sentence = re.sub(r'\s*\)\s*', ') ', sentence)
+        sentence = re.sub(r'"\s*(.*?)\s*"', r'"\1"', sentence) # For content inside quotes
+        sentence = re.sub(r"'\s*(.*?)\s*'", r"'\1'", sentence) # For single quotes
+
 
         return sentence
