@@ -5,7 +5,6 @@ All other methods are internal and use Python conventions.
 """
 
 import regex as re
-from tqdm import tqdm
 from queue import Queue
 from typing import List
 
@@ -13,55 +12,11 @@ from typing import List
 from indicnlp.tokenize import indic_tokenize, indic_detokenize
 from indicnlp.normalize.indic_normalize import IndicNormalizerFactory
 from sacremoses import MosesPunctNormalizer, MosesTokenizer, MosesDetokenizer
-from indicnlp.transliterate.unicode_transliterate import UnicodeIndicTransliterator
 
 
 class IndicProcessor:
     def __init__(self, inference=True):
-        """
-        Constructor for IndicProcessor. Initializes all necessary components.
-        """
         self.inference = inference
-
-        ##############################
-        # FLORES -> ISO CODES
-        ##############################
-        self._flores_codes = {
-            "asm_Beng": "as",
-            "awa_Deva": "hi",
-            "ben_Beng": "bn",
-            "bho_Deva": "hi",
-            "brx_Deva": "hi",
-            "doi_Deva": "hi",
-            "eng_Latn": "en",
-            "gom_Deva": "kK",
-            "gon_Deva": "hi",
-            "guj_Gujr": "gu",
-            "hin_Deva": "hi",
-            "hne_Deva": "hi",
-            "kan_Knda": "kn",
-            "kas_Arab": "ur",
-            "kas_Deva": "hi",
-            "kha_Latn": "en",
-            "lus_Latn": "en",
-            "mag_Deva": "hi",
-            "mai_Deva": "hi",
-            "mal_Mlym": "ml",
-            "mar_Deva": "mr",
-            "mni_Beng": "bn",
-            "mni_Mtei": "hi",
-            "npi_Deva": "ne",
-            "ory_Orya": "or",
-            "pan_Guru": "pa",
-            "san_Deva": "hi",
-            "sat_Olck": "or",
-            "snd_Arab": "ur",
-            "snd_Deva": "hi",
-            "tam_Taml": "ta",
-            "tel_Telu": "te",
-            "urd_Arab": "ur",
-            "unr_Deva": "hi",
-        }
 
         ##############################
         # INDIC DIGIT TRANSLATION (str.translate)
@@ -114,21 +69,17 @@ class IndicProcessor:
             self._digits_translation_table[c] = chr(c)
 
         ##############################
-        # PLACEHOLDER MAP QUEUE
-        ##############################
-        self._placeholder_entity_maps = Queue()
-
-        ##############################
-        # MOSES (as Python objects)
+        # MOSES (Python objects)
         ##############################
         self._en_tok = MosesTokenizer(lang="en")
         self._en_normalizer = MosesPunctNormalizer()
         self._en_detok = MosesDetokenizer(lang="en")
 
         ##############################
-        # TRANSLITERATOR (Python object)
+        # INDIC NORMALIZER for Hindi (can be parameterized if needed)
         ##############################
-        self._xliterator = UnicodeIndicTransliterator()
+        normalizer_factory = IndicNormalizerFactory()
+        self._indic_normalizer = normalizer_factory.get_normalizer("hi")
 
         ##############################
         # Precompiled Patterns
@@ -139,16 +90,7 @@ class IndicProcessor:
         self._DIGIT_NBSP_DIGIT = re.compile(r"(\d) (\d)")
         self._END_BRACKET_SPACE_PUNC_REGEX = re.compile(r"\) ([\.!:?;,])")
 
-        self._URL_PATTERN = re.compile(
-            r"\b(?<![\w/.])(?:(?:https?|ftp)://)?(?:(?:[\w-]+\.)+(?!\.))(?:[\w/\-?#&=%.]+)+(?!\.\w+)\b"
-        )
-        self._NUMERAL_PATTERN = re.compile(
-            r"(~?\d+\.?\d*\s?%?\s?-?\s?~?\d+\.?\d*\s?%|~?\d+%|\d+[-\/.,:']\d+[-\/.,:'+]\d+(?:\.\d+)?|\d+[-\/.:'+]\d+(?:\.\d+)?)"
-        )
-        self._EMAIL_PATTERN = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}")
-        self._OTHER_PATTERN = re.compile(r"[A-Za-z0-9]*[#|@]\w+")
-
-        # Combined punctuation replacements
+        # Punctuation replacements
         self._PUNC_REPLACEMENTS = [
             (re.compile(r"\r"), ""),
             (re.compile(r"\(\s*"), "("),
@@ -159,41 +101,26 @@ class IndicProcessor:
             (re.compile(r"[„“”«»]"), '"'),
         ]
 
-        ##############################
-        # INDIC NORMALIZER
-        ##############################
-        normalizer_factory = IndicNormalizerFactory()
-        self._indic_normalizer = normalizer_factory.get_normalizer("hi")
-
     def preprocess_batch(self, inputs: List[str], language: str):
-        """
-        Preprocess a batch of texts.
-        """
         processed_batch = []
         for sentence in inputs:
             processed_batch.append(self._preprocess(sentence, language))
         return processed_batch
 
     def postprocess_batch(self, inputs: List[str], language: str):
-        """
-        Postprocess a batch of texts.
-        """
         processed_batch = []
         for sentence in inputs:
             processed_batch.append(self._postprocess(sentence, language))
         return processed_batch
 
     def _preprocess(self, sentence: str, language: str) -> str:
-        """
-        Core preprocessing logic for a single sentence.
-        """
         if not sentence or sentence.strip() == "":
             return ""
 
-        # Normalize digits by translation
+        # Normalize digits
         sentence = sentence.translate(self._digits_translation_table)
 
-        # Normalize unicode punctuation to ASCII equivalents
+        # Normalize punctuation replacements
         for pattern, replacement in self._PUNC_REPLACEMENTS:
             sentence = pattern.sub(replacement, sentence)
 
@@ -212,60 +139,31 @@ class IndicProcessor:
         # Fix spacing after end bracket
         sentence = self._END_BRACKET_SPACE_PUNC_REGEX.sub(r")\1", sentence)
 
-        # Normalize Indic text (for Hindi here, could parameterize)
+        # Normalize Indic text (using Hindi normalizer here, can be improved to param)
         sentence = self._indic_normalizer.normalize(sentence)
 
-        # Tokenize sentence
+        # Tokenize
         if language == "en":
-            # English tokenization using Moses tokenizer
             sentence = self._en_tok.tokenize(sentence, return_str=True)
         else:
-            # Indic tokenization
             sentence = " ".join(indic_tokenize.trivial_tokenize(sentence, lang=language))
 
-        # Further normalize
+        # Clean extra spaces again
         sentence = self._MULTISPACE_REGEX.sub(" ", sentence).strip()
 
         return sentence
 
     def _postprocess(self, sentence: str, language: str) -> str:
-        """
-        Core postprocessing logic for a single sentence.
-        """
         if not sentence or sentence.strip() == "":
             return ""
 
-        # Detokenize the sentence based on language
+        # Detokenize
         if language == "en":
-            # English detokenization using Moses detokenizer
             sentence = self._en_detok.detokenize(sentence.split())
         else:
-            # Indic detokenization
-            sentence = indic_detokenize.trivial_detokenize(sentence.split(), lang=language)
+            sentence = indic_detokenize.trivial_detokenize(sentence.split())
 
-        return sentence.strip()
+        # Remove multiple spaces
+        sentence = self._MULTISPACE_REGEX.sub(" ", sentence).strip()
 
-
-# For testing purposes:
-if __name__ == "__main__":
-    processor = IndicProcessor()
-    sample_sentences = [
-        "यह एक परीक्षण वाक्य है।",
-        "This is a test sentence."
-    ]
-
-    print("Preprocessing Hindi:")
-    for sent in sample_sentences:
-        print(processor._preprocess(sent, "hi"))
-
-    print("\nPreprocessing English:")
-    for sent in sample_sentences:
-        print(processor._preprocess(sent, "en"))
-
-    print("\nPostprocessing Hindi:")
-    for sent in sample_sentences:
-        print(processor._postprocess(sent, "hi"))
-
-    print("\nPostprocessing English:")
-    for sent in sample_sentences:
-        print(processor._postprocess(sent, "en"))
+        return sentence

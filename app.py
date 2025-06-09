@@ -1,7 +1,4 @@
-# Then import from the inner package
-
 from IndicTransToolkit.IndicTransToolkit.processor import IndicProcessor
-
 
 import streamlit as st
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer, BitsAndBytesConfig
@@ -49,7 +46,7 @@ def batch_translate(input_sentences, src_lang, tgt_lang, model, tokenizer, ip):
     translations = []
     for i in range(0, len(input_sentences), BATCH_SIZE):
         batch = input_sentences[i : i + BATCH_SIZE]
-        batch = ip.preprocess_batch(batch, src_lang)  # <-- FIXED
+        batch = ip.preprocess_batch(batch, src_lang)
 
         inputs = tokenizer(batch, truncation=True, padding="longest", return_tensors="pt").to(DEVICE)
 
@@ -88,11 +85,12 @@ if st.button("Translate"):
             src_lang, tgt_lang = "en", "te"
             result = batch_translate([user_input], src_lang, tgt_lang, en_to_indic_model, en_to_indic_tokenizer, ip)[0]
         else:
-            # Transliterate Telugu input if user types in Latin
+            # Transliterate Telugu input if user types in Latin script (ITRANS)
             try:
                 user_input_telugu = transliterate(user_input, ITRANS, TELUGU)
-            except:
+            except Exception:
                 user_input_telugu = user_input
+
             src_lang, tgt_lang = "te", "en"
             result = batch_translate([user_input_telugu], src_lang, tgt_lang, indic_to_en_model, indic_to_en_tokenizer, ip)[0]
 
