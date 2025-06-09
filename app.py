@@ -47,7 +47,8 @@ def batch_translate(input_sentences, src_lang, tgt_lang, model, tokenizer, ip):
     for i in range(0, len(input_sentences), BATCH_SIZE):
         batch = input_sentences[i : i + BATCH_SIZE]
         batch = ip.preprocess_batch(batch, src_lang)
-
+        batch = [f"<{src_lang}> {sentence}" for sentence in batch]
+        
         inputs = tokenizer(batch, truncation=True, padding="longest", return_tensors="pt").to(DEVICE)
 
         with torch.no_grad():
