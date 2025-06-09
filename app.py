@@ -42,56 +42,39 @@ def load_model_and_tokenizer(model_path, quantization=None):
     model.eval()
     return tokenizer, model
 
+# ... (imports and load_model_and_tokenizer are similar)
+
 def batch_translate(input_sentences, src_lang_ip, tgt_lang_ip, model, tokenizer, ip):
     translations = []
     
-    # Define the special tokens for the model
-    # These are the target language tokens that the IndicTrans2 models expect
-    # to be prepended to the input for translation direction.
-    # Note: These are different from the 'src_lang' argument in the _src_tokenize
-    # function that is causing the error. The error is about the *source* language
-    # as perceived by the tokenizer's internal mechanisms, not the target token
-    # we prepend.
-    
-    # The `IndicTransToolkit` handles the `src_lang` and `tgt_lang` internally
-    # when you use `ip.preprocess_batch` and `ip.postprocess_batch`.
-    # For the `tokenizer` and `model.generate` call, we need to ensure the input
-    # format is correct, which often includes the *target* language token.
-    
-    # Let's map the IndicProcessor's target language codes to the model's special tokens
     model_target_tokens = {
         "eng_Latn": "<2en>",
         "tel_Telu": "<2tel>",
-        # Add other languages as needed
     }
 
-    # Get the target language token for the current translation
     target_lang_token = model_target_tokens.get(tgt_lang_ip)
     
     if not target_lang_token:
         st.error(f"Error: Unsupported target language '{tgt_lang_ip}' for model token.")
         return []
 
+    # ***CRITICAL CHANGE I SUGGESTED LAST TIME***
+    tokenizer.src_lang = src_lang_ip # <--- Explicitly setting tokenizer.src_lang
+    
     for i in range(0, len(input_sentences), BATCH_SIZE):
         batch = input_sentences[i : i + BATCH_SIZE]
         
         # 1. Preprocess using IndicProcessor (uses BCP-47 like tags)
-        # This handles normalization and other language-specific preprocessing.
-        preprocessed_batch = ip.preprocess_batch(batch, src_lang_ip)
+        # KEY DIFFERENCE 1 (related): ip.preprocess_batch call
+        preprocessed_batch = ip.preprocess_batch(batch, src_lang_ip) # <--- Passes only src_lang_ip to preprocess_batch
         
         # 2. Add the *target language token* to the preprocessed input.
-        # This tells the model which language to translate *into*.
-        # The tokenizer is part of the model's pipeline, and it expects this.
-        inputs_for_tokenizer = [f"{target_lang_token} {sentence}" for sentence in preprocessed_batch]
+        inputs_for_tokenizer = [f"{target_lang_token} {sentence}" for sentence in preprocessed_batch] # <--- Constructs new input with target token
         
         # 3. Tokenize the prepared input.
-        # The key insight here is that `_src_tokenize` error likely occurs when the
-        # tokenizer implicitly tries to derive the source language from the input
-        # or its configuration, and it doesn't recognize the value it gets.
-        # By providing the target language token correctly, we are guiding the model.
-        # Also, ensure no *other* source language parameter is being passed that conflicts.
-        inputs = tokenizer(inputs_for_tokenizer, truncation=True, padding="longest", return_tensors="pt").to(DEVICE)
-
+        # KEY DIFFERENCE 2 (related): tokenizer call
+        inputs = tokenizer(inputs_for_tokenizer, truncation=True, padding="longest", return_tensors="pt").to(DEVICE) # <--- Passes 'inputs_for_tokenizer'
+        
         with torch.no_grad():
             generated_tokens = model.generate(
                 **inputs,
@@ -100,21 +83,14 @@ def batch_translate(input_sentences, src_lang_ip, tgt_lang_ip, model, tokenizer,
                 max_length=256,
                 num_beams=5,
                 num_return_sequences=1,
-                # It's crucial NOT to pass a `src_lang` parameter directly here
-                # if the tokenizer isn't expecting it or has a conflict.
-                # The model often infers the source from the input without an explicit src_lang arg.
-                # If you absolutely *must* set `forced_bos_token_id`, ensure it's
-                # the ID of the *target* language token, not a source language tag.
-                # Example: forced_bos_token_id=tokenizer.lang_code_to_id[target_lang_token.strip('<>')]
-                # However, usually, prepending the token to the input is sufficient.
             )
 
         decoded = tokenizer.batch_decode(generated_tokens, skip_special_tokens=True)
         
         # 4. Post-process using IndicProcessor
-        translations += ip.postprocess_batch(decoded, tgt_lang_ip)
+        # KEY DIFFERENCE 3 (related): ip.postprocess_batch call
+        translations += ip.postprocess_batch(decoded, tgt_lang_ip) # <--- Passes tgt_lang_ip to postprocess_batch
     return translations
-
 
 # Load models
 with st.spinner("Loading models..."):
