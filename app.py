@@ -42,8 +42,6 @@ def load_model_and_tokenizer(model_path, quantization=None):
     model.eval()
     return tokenizer, model
 
-# ... (imports and load_model_and_tokenizer are similar)
-
 def batch_translate(input_sentences, src_lang_ip, tgt_lang_ip, model, tokenizer, ip):
     translations = []
     
@@ -52,29 +50,38 @@ def batch_translate(input_sentences, src_lang_ip, tgt_lang_ip, model, tokenizer,
         "tel_Telu": "<2tel>",
     }
 
-    target_lang_token = model_target_tokens.get(tgt_lang_ip)
+    target_lang_token_for_model = model_target_tokens.get(tgt_lang_ip)
     
-    if not target_lang_token:
+    if not target_lang_token_for_model:
         st.error(f"Error: Unsupported target language '{tgt_lang_ip}' for model token.")
         return []
 
-    # ***CRITICAL CHANGE I SUGGESTED LAST TIME***
-    tokenizer.src_lang = src_lang_ip # <--- Explicitly setting tokenizer.src_lang
+    # Removed: tokenizer.src_lang = src_lang_ip
+    # We will try passing src_lang directly to the tokenizer call now.
     
     for i in range(0, len(input_sentences), BATCH_SIZE):
         batch = input_sentences[i : i + BATCH_SIZE]
         
-        # 1. Preprocess using IndicProcessor (uses BCP-47 like tags)
-        # KEY DIFFERENCE 1 (related): ip.preprocess_batch call
-        preprocessed_batch = ip.preprocess_batch(batch, src_lang_ip) # <--- Passes only src_lang_ip to preprocess_batch
+        # 1. Preprocess using IndicProcessor.
+        preprocessed_batch = ip.preprocess_batch(batch, src_lang_ip) 
         
         # 2. Add the *target language token* to the preprocessed input.
-        inputs_for_tokenizer = [f"{target_lang_token} {sentence}" for sentence in preprocessed_batch] # <--- Constructs new input with target token
+        inputs_for_tokenizer = [f"{target_lang_token_for_model} {sentence}" for sentence in preprocessed_batch]
         
         # 3. Tokenize the prepared input.
-        # KEY DIFFERENCE 2 (related): tokenizer call
-        inputs = tokenizer(inputs_for_tokenizer, truncation=True, padding="longest", return_tensors="pt").to(DEVICE) # <--- Passes 'inputs_for_tokenizer'
-        
+        # ***CRITICAL CHANGE HERE: Pass src_lang directly to the tokenizer call***
+        # The `tokenization_utils.py` calls `self.tokenize(text, **kwargs)` internally.
+        # This means additional keyword arguments passed to `tokenizer.__call__` (`tokenizer()`)
+        # are forwarded to `self.tokenize`, and then to `self._tokenize`.
+        # This might be how `_src_tokenize` expects `src_lang`.
+        inputs = tokenizer(
+            inputs_for_tokenizer, 
+            truncation=True, 
+            padding="longest", 
+            return_tensors="pt",
+            src_lang=src_lang_ip # <--- NEW: Pass src_lang here
+        ).to(DEVICE)
+
         with torch.no_grad():
             generated_tokens = model.generate(
                 **inputs,
@@ -88,19 +95,13 @@ def batch_translate(input_sentences, src_lang_ip, tgt_lang_ip, model, tokenizer,
         decoded = tokenizer.batch_decode(generated_tokens, skip_special_tokens=True)
         
         # 4. Post-process using IndicProcessor
-        # KEY DIFFERENCE 3 (related): ip.postprocess_batch call
-        translations += ip.postprocess_batch(decoded, tgt_lang_ip) # <--- Passes tgt_lang_ip to postprocess_batch
+        translations += ip.postprocess_batch(decoded, tgt_lang_ip)
     return translations
 
 # Load models
 with st.spinner("Loading models..."):
-    # Load the English-to-Indic model and tokenizer
     en_to_indic_tokenizer, en_to_indic_model = load_model_and_tokenizer("ai4bharat/indictrans2-en-indic-1B")
-    
-    # Load the Indic-to-English model and tokenizer
     indic_to_en_tokenizer, indic_to_en_model = load_model_and_tokenizer("ai4bharat/indictrans2-indic-en-1B")
-    
-    # Initialize IndicProcessor
     ip = IndicProcessor(inference=True)
 
 # Streamlit UI
@@ -114,19 +115,14 @@ if st.button("Translate"):
         st.warning("Please enter a sentence to translate.")
     else:
         if mode == "English ➜ Telugu":
-            # Languages for IndicProcessor's preprocess/postprocess methods
             src_lang_ip, tgt_lang_ip = "eng_Latn", "tel_Telu"
             result = batch_translate([user_input], src_lang_ip, tgt_lang_ip, en_to_indic_model, en_to_indic_tokenizer, ip)[0]
         else:
-            # For Telugu to English
             try:
-                # Attempt to transliterate if the input is in ITRANS (Latin script)
                 user_input_telugu = transliterate(user_input, ITRANS, TELUGU)
             except Exception:
-                # If transliteration fails (e.g., already in Telugu script or invalid ITRANS)
                 user_input_telugu = user_input
-
-            # Languages for IndicProcessor's preprocess/postprocess methods
+            
             src_lang_ip, tgt_lang_ip = "tel_Telu", "eng_Latn"
             result = batch_translate([user_input_telugu], src_lang_ip, tgt_lang_ip, indic_to_en_model, indic_to_en_tokenizer, ip)[0]
 
