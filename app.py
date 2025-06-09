@@ -49,8 +49,7 @@ def batch_translate(input_sentences, src_lang, tgt_lang, model, tokenizer, ip):
     translations = []
     for i in range(0, len(input_sentences), BATCH_SIZE):
         batch = input_sentences[i : i + BATCH_SIZE]
-        batch = ip.preprocess_batch(batch, src_lang, tgt_lang)
-
+        batch = ip.preprocess_batch(batch, src_lang)  # <-- FIXED
 
         inputs = tokenizer(batch, truncation=True, padding="longest", return_tensors="pt").to(DEVICE)
 
@@ -67,6 +66,7 @@ def batch_translate(input_sentences, src_lang, tgt_lang, model, tokenizer, ip):
         decoded = tokenizer.batch_decode(generated_tokens, skip_special_tokens=True)
         translations += ip.postprocess_batch(decoded, tgt_lang)
     return translations
+
 
 # Load models
 with st.spinner("Loading models..."):
