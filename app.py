@@ -82,7 +82,7 @@ if st.button("Translate"):
         st.warning("Please enter a sentence to translate.")
     else:
         if mode == "English ➜ Telugu":
-            src_lang, tgt_lang = "en", "te"
+            src_lang, tgt_lang = "eng_Latn", "tel_Telu"
             result = batch_translate([user_input], src_lang, tgt_lang, en_to_indic_model, en_to_indic_tokenizer, ip)[0]
         else:
             # Transliterate Telugu input if user types in Latin script (ITRANS)
@@ -91,7 +91,7 @@ if st.button("Translate"):
             except Exception:
                 user_input_telugu = user_input
 
-            src_lang, tgt_lang = "te", "en"
+            src_lang, tgt_lang = "tel_Telu", "eng_Latn"
             result = batch_translate([user_input_telugu], src_lang, tgt_lang, indic_to_en_model, indic_to_en_tokenizer, ip)[0]
 
         st.success("Translation:")
