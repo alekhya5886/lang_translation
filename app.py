@@ -1,7 +1,6 @@
 # Then import from the inner package
-from IndicTransToolkit import processor
-from IndicTransToolkit.processor import IndicProcessor
 
+from IndicTransToolkit.processor import IndicProcessor
 
 import streamlit as st
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer, BitsAndBytesConfig
